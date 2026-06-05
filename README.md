@@ -1,5 +1,6 @@
 # TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning
-[**Shahira Abousamra, Asmita Sood, Sylvia Plevritis, TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning, CVPR 2026.**](TopoSlide_abousamra_cvpr26.pdf)
+[**Shahira Abousamra, Asmita Sood, Sylvia Plevritis, TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning, CVPR 2026.**](https://shahiraabousamra.github.io/resources/TopoSlide_abousamra_cvpr26.pdf)
+<!--a href="https://shahiraabousamra.github.io/resources/TopoSlide_abousamra_cvpr26.pdf">Open PDF File</a>-->
 
 This repository will host the code and models for TopoSlide.
 

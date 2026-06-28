@@ -1,6 +1,9 @@
 # TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning
 [**Shahira Abousamra, Asmita Sood, Sylvia Plevritis, TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning, CVPR 2026.**](https://openaccess.thecvf.com/content/CVPR2026/html/Abousamra_TopoSlide_Topologically-Informed_Histopathology_Whole_Slide_Image_Representation_Learning_CVPR_2026_paper.html)
 
+TopoSlide is a novel approach for whole slide image (WSI) representation learning in computational pathology that incorporates topological data analysis (TDA) to capture global spatial features and local morphological patterns in histopathology images. It addresses the challenge of learning meaningful representations from gigapixel WSIs by leveraging persistent homology to encode topological features alongside traditional visual features.
+
+
 1. Set up the environment
 
 2. Download [pretrained model](https://huggingface.co/ShahiraAbousamra/TopoSlide).

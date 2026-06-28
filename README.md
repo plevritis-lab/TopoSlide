@@ -1,24 +1,25 @@
 # TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning
-[**Shahira Abousamra, Asmita Sood, Sylvia Plevritis, TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning, CVPR 2026.**]()
-
-This repository will host the code and models for TopoSlide.
+[**Shahira Abousamra, Asmita Sood, Sylvia Plevritis, TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning, CVPR 2026.**](https://openaccess.thecvf.com/content/CVPR2026/html/Abousamra_TopoSlide_Topologically-Informed_Histopathology_Whole_Slide_Image_Representation_Learning_CVPR_2026_paper.html)
 
 1. Set up the environment
 
+2. Download [pretrained model](https://huggingface.co/ShahiraAbousamra/TopoSlide).
 
-2. Preprocessing
+
+3. Preprocessing
  
-	2.1. Extract WSIs meta data.  \
+	3.1. Extract WSIs meta data.  \
 	Check ```preprocessing/extract_meta_data/readme.md``` 
 
-    2.2. Tiling:     \
+    3.2. Tiling:     \
 	Check ```preprocessing/tiling/readme.md```  
     
-	2.3. Cluster WSI patch embeddings.  \
+	3.3. Generate patch embeddings.  \
+	Use pretrained patch encoder (we used CONCH model) to generate patch embeddings.
+
+	3.4. Cluster WSI patch embeddings.  \
 	Check ```preprocessing/cluster/readme.md```  
 
-
-3. Generate patch embeddings
 
 4. Generate Whole Slide Image (WSI) embeddings:  \
 Check ```eval_wsi_embeddings/readme.md```  
@@ -45,4 +46,5 @@ This code and associated models are released under the CC-BY-NC-ND 4.0 license a
     author      =  {Shahira Abousamra and Asmita Sood and Sylvia Plevritis},
     title       =  {TopoSlide: Topologically-Informed Histopathology Whole Slide Image Representation Learning},
     booktitle   =  {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    year        =  {2026}}
+    year        =  {2026},
+	pages		=  {13691-13701}}

@@ -59,7 +59,7 @@ if __name__=="__main__":
     # for key in state_dict.keys():
     #     print(key)
     print('stat_dict loaded')
-    model.load_state_dict(state_dict, strict=True)
+    model.vision_encoder.load_state_dict(state_dict, strict=True)
     model = model.to(device)
     print('model loaded')
     print('model.device', model.device)
@@ -75,29 +75,36 @@ if __name__=="__main__":
         slide_name = wsi_dim_arr[indx,0]
         print('slide_name', slide_name)
         _, width, height, mag, pw  = wsi_dim_arr[wsi_dim_arr[:,0]==slide_name][0]
-        patch_size_lv0 = pw
+        # patch_size_lv0 = pw
+        tile_size = pw
         patch_feat_filepath = glob.glob(os.path.join(patch_embedding_dir, f"{slide_name}*.h5"))
         print('patch_feat_filepath', patch_feat_filepath)
         if(patch_feat_filepath is None or len(patch_feat_filepath )==0):
             continue
         patch_feat_filepath = patch_feat_filepath[0]
+        slide_filepath = os.path.join(slide_root_output_dir, os.path.basename(patch_feat_filepath)[:-len(".h5")]+".pkl")
+        print('slide_filepath', slide_filepath)
+        if(os.path.exists(slide_filepath)):
+            continue
         print('slide_name', slide_name)
         patch_embedding_hdf_file = h5py.File(patch_feat_filepath, 'r')
-        features = patch_embedding_hdf_file['features'][:]
-        coords = patch_embedding_hdf_file['coords'][:]
+        embedding_arr = patch_embedding_hdf_file['features'][:]
+        coord_arr = patch_embedding_hdf_file['coords'][:]
+        coord_arr[:,0] = (coord_arr[:,0]/tile_size*patch_size_lv0).astype(int)
+        coord_arr[:,1] = (coord_arr[:,1]/tile_size*patch_size_lv0).astype(int)
 
         # extract slide embedding
         slide_filepath = os.path.join(slide_root_output_dir, os.path.basename(patch_feat_filepath)[:-len(".h5")]+".pkl")
         if(os.path.exists(slide_filepath)):
             continue
         with torch.autocast('cuda', torch.float16), torch.inference_mode():
-            if(len(features.shape)!=3):
-                features = features[np.newaxis, :]
-            if(len(coords.shape)!=3):
-                coords = coords[np.newaxis, :]
-            features = torch.from_numpy(features).to(device)
-            coords = torch.from_numpy(coords).to(device)
-            slide_embedding = model.encode_slide_from_patch_features(features, coords, patch_size_lv0)
+            if(len(embedding_arr.shape)!=3):
+                embedding_arr = embedding_arr[np.newaxis, :]
+            if(len(coord_arr.shape)!=3):
+                coord_arr = coord_arr[np.newaxis, :]
+            embedding_arr = torch.from_numpy(embedding_arr).to(device)
+            coord_arr = torch.from_numpy(coord_arr).to(device)
+            slide_embedding = model.encode_slide_from_patch_features(embedding_arr, coord_arr, patch_size_lv0)
             with open(slide_filepath, 'wb') as file:
                 pickle.dump(slide_embedding, file)
 

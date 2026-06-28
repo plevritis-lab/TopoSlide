@@ -21,6 +21,31 @@ from model.configuration import TopoSlideConfig
 # done_filename = "done.txt"
 # error_filename = "error.txt"
 
+'''
+nohup python run_toposlide_eval_w_exclude_debug.py  \
+--patch_embedding_dir "/oak/stanford/groups/plevriti/shahira/datasets/dhmc_luad/patches_20x_512_conch_tile_embedding" \
+--slide_root_output_dir "/oak/stanford/groups/plevriti/shahira/datasets/toposlide_eval/dhmc_luad/dhmc_luad_wsi_20x_512_toposlide_tcga_luad_token_cond_fix_power_dtm_tpers_w5e-1_e212_c15" \
+--checkpoint_path "/scratch/groups/plevriti/shahira/toposlide_checkpoints/tcga_luad4_lr1e-4_pw512_s1_token_cond_fix_power_dtm_tpers_w5e-1/toposlide_epoch_212_g_-0.0003_l_fit_-0.0122_l_real_0.0141_grad_loss.pt" \
+--clustering_dir "/oak/stanford/groups/plevriti/shahira/datasets/dhmc_luad/patches_20x_512_conch_tile_embedding_tcga_luad_kmeans_n16/prediction_kmeans" \
+--wsi_dim_filepath "/oak/stanford/groups/plevriti/shahira/dhmc_luad_wsi_dim_p512_m20.csv" \
+--ignore_cluster_ids 1 8 0 \
+--n_clusters 16 \
+>> ../log/log_run_toposlide_eval_dhmc_luad_token_cond_fix_power_dtm_tpers_w5e-1_e212_c15.txt &
+'''
+
+'''
+python run_toposlide_eval_w_exclude_debug.py \
+--patch_embedding_dir "/oak/stanford/groups/plevriti/shahira/datasets/dhmc_luad/patches_20x_512_conch_tile_embedding" \
+--slide_root_output_dir "/oak/stanford/groups/plevriti/shahira/datasets/dhmc_luad/titan_topo_tcga_luad_e215_fix512_infertilesize"  \
+--patch_size_lv0 512 --checkpoint_path "/oak/stanford/groups/plevriti/shahira/datasets/trained_models/titan_topo_epoch_215.pt"  \
+--wsi_dim_filepath "/oak/stanford/groups/plevriti/shahira/dhmc_luad_wsi_dim_p512_m20.csv"  \
+--clustering_dir "/oak/stanford/groups/plevriti/shahira/datasets/dhmc_luad/patches_20x_512_conch_tile_embedding_tcga_luad_kmeans_n16/prediction_kmeans"  \
+--ignore_cluster_ids 1 8 0 15   \
+--n_clusters 16 \
+&
+'''
+
+
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Eval TopoSlide")    
 
@@ -77,15 +102,17 @@ if __name__=="__main__":
 
     state_dict2 = torch.load(checkpoint_path)
     state_dict = state_dict2['toposlide'] 
+    model.vision_encoder.load_state_dict(state_dict, strict=True)
+    # model.load_model(checkpoint_path)
 
     # for key in state_dict.keys():
     #     print(key)
-    print('stat_dict loaded')
-    model.load_state_dict(state_dict, strict=True)
+    # print('stat_dict loaded')
+    # model.load_state_dict(state_dict, strict=True)
     model = model.to(device)
     print('model loaded')
     print('model.device', model.device)
-
+    model.set_mode_main_eval()
 
     wsi_dim_df = pd.read_csv(wsi_dim_filepath)
     wsi_dim_arr = wsi_dim_df.to_numpy()
@@ -94,7 +121,7 @@ if __name__=="__main__":
         slide_name = wsi_dim_arr[indx,0]
         print('slide_name', slide_name)
         _, width, height, mag, pw  = wsi_dim_arr[wsi_dim_arr[:,0]==slide_name][0]
-        patch_size_lv0 = pw
+        # patch_size_lv0 = pw
         patch_feat_filepath = glob.glob(os.path.join(patch_embedding_dir, f"{slide_name}*.h5"))
         print('patch_feat_filepath', patch_feat_filepath)
         if(patch_feat_filepath is None or len(patch_feat_filepath )==0):
@@ -126,17 +153,17 @@ if __name__=="__main__":
         if(tiles_coord_x.shape[0]==0):
             continue
 
-        # ti = 0
-        # while(True):
-        #     x1 = tiles_coord_x[ti]
-        #     x2 = tiles_coord_x[ti+1]
-        #     y1 = tiles_coord_y[ti]
-        #     y2 = tiles_coord_y[ti+1]
-        #     tile_size = max(x2-x1, y2-y1)   
-        #     if(tile_size < 1500):
-        #         break
-        #     ti += 1
-        tile_size = pw
+        ti = 0
+        while(True):
+            x1 = tiles_coord_x[ti]
+            x2 = tiles_coord_x[ti+1]
+            y1 = tiles_coord_y[ti]
+            y2 = tiles_coord_y[ti+1]
+            tile_size = max(x2-x1, y2-y1)   
+            if(tile_size < 1500):
+                break
+            ti += 1
+        # tile_size = pw
         scale = tile_vis_size/tile_size
 
         new_height = int(height*scale+1)
